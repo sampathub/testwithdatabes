@@ -1055,15 +1055,20 @@ try {
     messagingSenderId: config.messagingSenderId,
     appId: config.appId
   });
+
+  // Netlify Environment variable එකෙන් හෝ config එකෙන් නිවැරදි Database ID එක ලබාගැනීම
+  const databaseId = process.env.FIREBASE_DATABASE_ID || config.firestoreDatabaseId || "(default)";
+
   // Use initializeFirestore with experimentalForceLongPolling for robust serverless connectivity
   firestoreDb = initializeFirestore(firebaseApp, {
-    experimentalForceLongPolling: true
-  }, config.firestoreDatabaseId || "(default)");
+    experimentalForceLongPolling: true,
+    databaseId: databaseId
+  });
   
   if (loadedFromDisk) {
-    console.log(`Firestore initialized successfully on server (long polling enabled) using config from: ${firebaseConfigPath} with database ID:`, config.firestoreDatabaseId || "(default)");
+    console.log(`Firestore initialized successfully on server (long polling enabled) using config from: ${firebaseConfigPath} with database ID:`, databaseId);
   } else {
-    console.log("Firestore initialized successfully on server (long polling enabled) using static fallback configuration with database ID:", config.firestoreDatabaseId || "(default)");
+    console.log("Firestore initialized successfully on server (long polling enabled) using static fallback configuration with database ID:", databaseId);
   }
 } catch (err) {
   console.error("Failed to initialize Firebase Firestore:", err);
